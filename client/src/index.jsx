@@ -15,7 +15,18 @@ class App extends React.Component {
 
   search (term) {
     console.log(`${term} was searched`);
-    // TODO
+    
+    let json = JSON.stringify({username: term});
+
+    $.post({
+      url: `http://localhost:1128/repos`,
+      contentType: `application/json`,
+      //PRO-TIP: data: req.body
+        //objects must be in JSON string format
+      data: json,
+      success: () => console.log('search worked'),
+      error: () => console.log('search failed')
+    })
   }
 
   render () {
