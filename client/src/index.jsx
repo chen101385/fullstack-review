@@ -7,33 +7,52 @@ import RepoList from './components/RepoList.jsx';
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { 
+    this.state = {
       repos: []
     }
 
   }
 
-  search (term) {
+  fetch() {
+    $.get({
+      url: `http://localhost:1128/repos`,
+      contentType: `application/json`,
+      //PRO-TIP: data: req.body
+      //objects must be in JSON string format
+      success: (data) => this.setState({
+        repos: data
+      }),
+      error: () => console.log('search failed')
+    })
+  }
+
+  search(term) {
     console.log(`${term} was searched`);
-    
-    let json = JSON.stringify({username: term});
+
+    let json = JSON.stringify({ username: term });
 
     $.post({
       url: `http://localhost:1128/repos`,
       contentType: `application/json`,
       //PRO-TIP: data: req.body
-        //objects must be in JSON string format
+      //objects must be in JSON string format
       data: json,
-      success: () => console.log('search worked'),
+      //use complete when not sending anything back in post request (i.e. not using req.send/json);
+      success: () => this.fetch(),
       error: () => console.log('search failed')
     })
   }
 
-  render () {
+  componentDidMount() {
+    this.fetch();
+  }
+
+
+  render() {
     return (<div>
       <h1>Github Fetcher</h1>
-      <RepoList repos={this.state.repos}/>
-      <Search onSearch={this.search.bind(this)}/>
+      <Search onSearch={this.search.bind(this)} />
+      <RepoList repos={this.state.repos} />
     </div>)
   }
 }

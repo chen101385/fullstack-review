@@ -53,7 +53,8 @@ let repoSchema = mongoose.Schema({
   fullname: String,
   repo_name: String,
   repo_url: String,
-  description: String
+  description: String,
+  watchers_count: Number
 });
 
 //Functions added to the methods property of a schema get compiled into the Model prototype and exposed on each document instance
@@ -67,7 +68,7 @@ let GHRepo = mongoose.model('GHRepo', repoSchema);
 //test document
 // let testRepo = new GHRepo({id:2, username: 'test2', repo_name: 'testname2', repo_url: 'testurl2'});
 
-let save = (repos) => {
+let save = (repos, callback) => {
   // TODO: Your code here
   // This function should save a repo or repos to
   // the MongoDB
@@ -79,7 +80,8 @@ let save = (repos) => {
       repo_name: repo.name,
       fullname: repo.full_name,
       repo_url: repo.owner.repos_url,
-      description: repo.description
+      description: repo.description,
+      watchers_count: repo.watchers
     }) 
 
     document.save((err) => {
@@ -88,9 +90,29 @@ let save = (repos) => {
       }
     })
   })
+  callback();
 }
+
+let fetch = (callback) => {
+//attempting to get results;
+  GHRepo.find().limit(25).sort(`-watchers_count`).exec((err, results) => {
+    if (err) {
+      console.log('fetch failed!')
+    }
+    if (results.length) {
+      callback(results);
+    }
+  })
+}
+
+//CLEAR RESULTS
+// GHRepo.find().remove().exec();
 
 // console.log(testRepo);
 // save(testRepo);
 
-module.exports.save = save;
+// module.exports.save = save;
+module.exports = {
+  save,
+  fetch
+}

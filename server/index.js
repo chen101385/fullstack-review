@@ -3,6 +3,7 @@ const app = express();
 const mongoDB = require('../database');
 const parse = require('body-parser');
 const github = require('../helpers/github.js');
+const database = require('../database');
 //defaults to index.js
 
 app.use(express.static(__dirname + '/../client/dist'));
@@ -14,14 +15,13 @@ app.post('/repos', function (req, res) {
   // This route should take the github username provided
   // and get the repo information from the github API, then
   // save the repo information in the database
-  console.log('post worked')
   if (!req.body) {
     res.sendStatus(500).end();
   } else {
     //get repo info from github API
-    github.getReposByUsername(req.body.username);
-    //save repo info in db
-    res.sendStatus(200).end();
+      //save repo info in db
+        //**pass res.sendStatus(200).end in as a CALLBACK, to make sure it ONLY runs after async function completes
+    github.getReposByUsername(req.body.username, () => res.sendStatus(200).end());
   }
 });
 
@@ -31,9 +31,12 @@ app.get('/repos', function (req, res) {
   if (!req.body) {
     res.sendStatus(500).end();
   } else {
-   
-    //save repo info in db
-    res.status(200).end();
+   //get top 25 repos based on selection criteria (TBD)
+   database.fetch((results) => {
+    console.log('get works; request body:', results) 
+    res.status(200);
+    res.json(results)
+  })
   }
 });
 

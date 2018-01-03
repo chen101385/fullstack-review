@@ -5,7 +5,7 @@ const database = require('../database/index.js');
 //request('http://www.google.com', function (error, response, body) 
 
 
-let getReposByUsername = (username) => {
+let getReposByUsername = (username, callback) => {
   // TODO - Use the request module to request repos for a specific
   // user from the github API
 
@@ -26,7 +26,7 @@ let getReposByUsername = (username) => {
 
     //check if response object is an actual repo
     if (Array.isArray(info)) {
-      database.save(info);
+      database.save(info, callback);
     } else {
       console.log({ error: err })
     }
