@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const mongoDB = require('../database');
 const parse = require('body-parser');
 const github = require('../helpers/github.js');
 const database = require('../database');
